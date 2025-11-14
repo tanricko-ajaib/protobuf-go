@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/internal/encoding/json"
 	"google.golang.org/protobuf/internal/encoding/messageset"
 	"google.golang.org/protobuf/internal/errors"
@@ -322,7 +323,12 @@ func (e encoder) marshalSingular(val protoreflect.Value, fd protoreflect.FieldDe
 		e.WriteFloat(val.Float(), 64)
 
 	case protoreflect.BytesKind:
-		e.WriteString(base64.StdEncoding.EncodeToString(val.Bytes()))
+		if _uuid, err := uuid.FromBytes(val.Bytes()); err == nil {
+			e.WriteString(_uuid.String())
+			return nil
+		} else {
+			e.WriteString(base64.StdEncoding.EncodeToString(val.Bytes()))
+		}
 
 	case protoreflect.EnumKind:
 		if fd.Enum().FullName() == genid.NullValue_enum_fullname {
