@@ -325,11 +325,9 @@ func (e encoder) marshalSingular(val protoreflect.Value, fd protoreflect.FieldDe
 	case protoreflect.BytesKind:
 		if _uuid, err := uuid.FromBytes(val.Bytes()); err == nil {
 			e.WriteString(_uuid.String())
-			return nil
 		} else {
 			e.WriteString(base64.StdEncoding.EncodeToString(val.Bytes()))
 		}
-
 	case protoreflect.EnumKind:
 		if fd.Enum().FullName() == genid.NullValue_enum_fullname {
 			e.WriteNull()
