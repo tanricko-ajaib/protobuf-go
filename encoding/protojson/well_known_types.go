@@ -12,6 +12,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ajaibid/coin-common-golang/decimal"
+	coincommonpb "github.com/ajaibid/coin-protobuf/coincommon/gen/go/v1"
+	coinwalletpb "github.com/ajaibid/coin-protobuf/coinwallet/gen/go/v1"
 	"google.golang.org/protobuf/internal/encoding/json"
 	"google.golang.org/protobuf/internal/errors"
 	"google.golang.org/protobuf/internal/genid"
@@ -53,6 +56,41 @@ func wellKnownTypeMarshaler(name protoreflect.FullName) marshalFunc {
 			return encoder.marshalFieldMask
 		case genid.Empty_message_name:
 			return encoder.marshalEmpty
+		}
+	}
+	if name.Parent() == "coinwallet.proto.v1" {
+		switch name.Name() {
+		case "AmountRequest":
+			return func(e encoder, m protoreflect.Message) error {
+				ap := m.Interface().(*coinwalletpb.AmountRequest)
+				switch ap.GetAmountType() {
+				case coinwalletpb.AmountType_AMOUNT_TYPE_UNSPECIFIED,
+					coinwalletpb.AmountType_AMOUNT_TYPE_VALUE:
+					dec, err := decimal.NewFromProto(ap.GetAmount())
+					if err != nil {
+						return err
+					}
+					e.WriteString(dec.String())
+				case coinwalletpb.AmountType_AMOUNT_TYPE_REMAINING_ACCOUNT_BALANCE,
+					coinwalletpb.AmountType_AMOUNT_TYPE_REMAINING_PENDING_AMOUNT:
+					e.WriteString(ap.GetAmountType().String())
+				}
+				return nil
+			}
+		}
+	}
+	if name.Parent() == "coincommon.proto.v1" {
+		switch name.Name() {
+		case "Decimal":
+			return func(e encoder, m protoreflect.Message) error {
+				dp := m.Interface().(*coincommonpb.Decimal)
+				dec, err := decimal.NewFromProto(dp)
+				if err != nil {
+					return err
+				}
+				e.WriteString(dec.String())
+				return nil
+			}
 		}
 	}
 	return nil
