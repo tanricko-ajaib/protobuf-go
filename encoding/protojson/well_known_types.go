@@ -15,6 +15,8 @@ import (
 	"github.com/ajaibid/coin-common-golang/decimal"
 	coincommonpb "github.com/ajaibid/coin-protobuf/coincommon/gen/go/v1"
 	coinwalletpb "github.com/ajaibid/coin-protobuf/coinwallet/gen/go/v1"
+	"github.com/holiman/uint256"
+	"google.golang.org/protobuf/encoding/protojson/pb"
 	"google.golang.org/protobuf/internal/encoding/json"
 	"google.golang.org/protobuf/internal/errors"
 	"google.golang.org/protobuf/internal/genid"
@@ -89,6 +91,47 @@ func wellKnownTypeMarshaler(name protoreflect.FullName) marshalFunc {
 					return err
 				}
 				e.WriteString(dec.String())
+				return nil
+			}
+		}
+	}
+	if name.Parent() == "main" {
+		switch name.Name() {
+		case "Decimal":
+			return func(e encoder, m protoreflect.Message) error {
+				dp := m.Interface().(*pb.Decimal)
+
+				amount := new(uint256.Int)
+				amount.SetBytes(dp.GetAmount())
+				scale := int(dp.GetScale())
+
+				{
+					amountStr := amount.String()
+
+					switch {
+					case scale < 0:
+						// Negative scale means multiply by 10^(-scale): append zeros.
+						amountStr = amountStr + strings.Repeat("0", -scale)
+
+					case scale == 0:
+						// No fractional part; leave as integer string.
+
+					case scale > len(amountStr):
+						// Fractional part longer than integer digits: prefix 0. and zeros.
+						amountStr = "0." + strings.Repeat("0", scale-len(amountStr)) + amountStr
+
+					case scale == len(amountStr):
+						amountStr = "0." + amountStr
+
+					default:
+						// Insert decimal point before the last `scale` digits.
+						insertPos := len(amountStr) - scale
+						amountStr = amountStr[:insertPos] + "." + amountStr[insertPos:]
+					}
+
+					e.WriteString(amountStr)
+				}
+
 				return nil
 			}
 		}
