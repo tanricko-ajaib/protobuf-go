@@ -97,6 +97,22 @@ func wellKnownTypeMarshaler(name protoreflect.FullName) marshalFunc {
 	}
 	if name.Parent() == "main" {
 		switch name.Name() {
+		case "DecimalRequest":
+			return func(e encoder, m protoreflect.Message) error {
+				dp := m.Interface().(*pb.DecimalRequest)
+
+				if dp.GetAmount().GetAmountType() != pb.AmountType_AMOUNT_VALUE {
+					e.WriteString("_" + dp.GetAmount().GetAmountType().String())
+					return nil
+				}
+
+				amount := new(uint256.Int)
+				amount.SetBytes(dp.GetAmount().GetAmount())
+				scale := int(dp.GetScale())
+
+				writeDecimal(e, amount, scale)
+				return nil
+			}
 		case "Decimal":
 			return func(e encoder, m protoreflect.Message) error {
 				dp := m.Interface().(*pb.Decimal)
@@ -105,38 +121,39 @@ func wellKnownTypeMarshaler(name protoreflect.FullName) marshalFunc {
 				amount.SetBytes(dp.GetAmount())
 				scale := int(dp.GetScale())
 
-				{
-					amountStr := amount.String()
-
-					switch {
-					case scale < 0:
-						// Negative scale means multiply by 10^(-scale): append zeros.
-						amountStr = amountStr + strings.Repeat("0", -scale)
-
-					case scale == 0:
-						// No fractional part; leave as integer string.
-
-					case scale > len(amountStr):
-						// Fractional part longer than integer digits: prefix 0. and zeros.
-						amountStr = "0." + strings.Repeat("0", scale-len(amountStr)) + amountStr
-
-					case scale == len(amountStr):
-						amountStr = "0." + amountStr
-
-					default:
-						// Insert decimal point before the last `scale` digits.
-						insertPos := len(amountStr) - scale
-						amountStr = amountStr[:insertPos] + "." + amountStr[insertPos:]
-					}
-
-					e.WriteString(amountStr)
-				}
-
+				writeDecimal(e, amount, scale)
 				return nil
 			}
 		}
 	}
 	return nil
+}
+
+func writeDecimal(e encoder, amount *uint256.Int, scale int) {
+	amountStr := amount.String()
+
+	switch {
+	case scale < 0:
+		// Negative scale means multiply by 10^(-scale): append zeros.
+		amountStr = amountStr + strings.Repeat("0", -scale)
+
+	case scale == 0:
+		// No fractional part; leave as integer string.
+
+	case scale > len(amountStr):
+		// Fractional part longer than integer digits: prefix 0. and zeros.
+		amountStr = "0." + strings.Repeat("0", scale-len(amountStr)) + amountStr
+
+	case scale == len(amountStr):
+		amountStr = "0." + amountStr
+
+	default:
+		// Insert decimal point before the last `scale` digits.
+		insertPos := len(amountStr) - scale
+		amountStr = amountStr[:insertPos] + "." + amountStr[insertPos:]
+	}
+
+	e.WriteString(amountStr)
 }
 
 type unmarshalFunc func(decoder, protoreflect.Message) error
