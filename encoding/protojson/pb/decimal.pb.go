@@ -78,7 +78,7 @@ var File_pb_decimal_proto protoreflect.FileDescriptor
 
 const file_pb_decimal_proto_rawDesc = "" +
 	"\n" +
-	"\x10pb/decimal.proto\x12\x04main\"7\n" +
+	"\x10pb/decimal.proto\x12\x17coinwallet.proto.v1.old\"7\n" +
 	"\aDecimal\x12\x16\n" +
 	"\x06amount\x18\x01 \x01(\fR\x06amount\x12\x14\n" +
 	"\x05scale\x18\x02 \x01(\x05R\x05scaleB\x06Z\x04.;pbb\x06proto3"
@@ -97,7 +97,7 @@ func file_pb_decimal_proto_rawDescGZIP() []byte {
 
 var file_pb_decimal_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_pb_decimal_proto_goTypes = []any{
-	(*Decimal)(nil), // 0: main.Decimal
+	(*Decimal)(nil), // 0: coinwallet.proto.v1.old.Decimal
 }
 var file_pb_decimal_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
