@@ -1,9 +1,0 @@
-syntax = "proto3";
-package coinwallet.proto.v1.old;
-
-option go_package = ".;pb";
-
-message Decimal {
-  bytes amount = 1; //[4]uint64
-  int32 scale = 2;
-}

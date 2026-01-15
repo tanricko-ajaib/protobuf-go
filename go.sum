@@ -2,6 +2,8 @@ github.com/ajaibid/coin-common-golang v0.0.20 h1:a17Jov0Kj0rCvwetN2DcVIOh6pvqsuT
 github.com/ajaibid/coin-common-golang v0.0.20/go.mod h1:5Ovv/Qe88y4g+XqS5FbS+BzLQmmOrUgXXn6iFB8mLck=
 github.com/ajaibid/coin-protobuf v0.0.1 h1:R4uDzsjmA8W9pSp4m58OpJ4LyrdY2y5xbJGh/Jd29kI=
 github.com/ajaibid/coin-protobuf v0.0.1/go.mod h1:PpXv4JCoYu4oEiPiKuqhKsLaFJPzaKOKGwYsbDOtOeE=
+github.com/ajaibid/coin-wallet-v2/pkg/pb v0.0.0-20260113061051-b3e4a93eb376 h1:uLrRWr/OZbDuxasouoUdtHz451bbxFzZ4cFoYwuNJvU=
+github.com/ajaibid/coin-wallet-v2/pkg/pb v0.0.0-20260113061051-b3e4a93eb376/go.mod h1:Y5uGZc6URKhEZm7nzGfdddPzNEfyS69jbHyDGNQL+TA=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang/protobuf v1.5.0 h1:LUVKkCeviFUMKqHa4tXIIij/lbhnMbP7Fn5wKdKkRh4=
